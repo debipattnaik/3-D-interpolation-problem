@@ -1,0 +1,33 @@
+double LinearInterp(double x1, double x2, double f1, double f2, double p)
+{return ( (p-x1)*(f2-f1)/(x2-x1) ) + f1;}
+/*p is 3 element array which is the point where interpolation has to calculated. f is 3D array defining the whole
+function over all GRID_POINTS. You have to find which neighboring grid points lie around point p, which I am
+defining as index[] array. So in my function my point p lies between x[index[0]-1], x[index[0]], y[index[1]-1],
+y[index[1]], z[index[2]-1], z[index[2]]. Arrays x,y,z are functions of indexes. They also have specific values at each
+index.
+*/
+void Trilinear(double p[], double f[GRID_POINTS][GRID_POINTS][GRID_POINTS], double interp_f)
+{
+int i;
+int index[3];
+double a,b,c;
+double s,t,u;
+double w;
+//Step 1) 4 linear interpolations
+//Front face of cube
+a=LinearInterp(x[index[0]-1],x[index[0]],
+f[index[0]-1][index[1]-1][index[2]-1], f[index[0]][index[1]-1][index[2]-1], p[0] );
+b=LinearInterp(x[index[0]-1],x[index[0]],
+f[index[0]-1][index[1]][index[2]-1][i], f[index[0]][index[1]][index[2]-1][i], p[0] );
+//Back face of cube
+s=LinearInterp(x[index[0]-1],x[index[0]],
+f[index[0]-1][index[1]-1][index[2]][i], model[index[0]][index[1]-1][index[2]][i], p[0] );
+t=LinearInterp(Gammao[index[0]-1],Gammao[index[0]],
+f[index[0]-1][index[1]][index[2]][i], f[index[0]][index[1]][index[2]][i], p[0] );
+//Step 2) 2 linear interpolations
+c=LinearInterp(y[index[1]-1], y[index[1]], a, b, p[1] );
+u=LinearInterp(y[index[1]-1], y[index[1]], s, t, p[1] );
+//Step 3) Final interpolation
+//Inside interpolation
+interp_f = LinearInterp(z[index[2]-1],z[index[2]], c, u, p[2] );
+}
